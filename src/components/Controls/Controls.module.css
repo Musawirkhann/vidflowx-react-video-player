@@ -1,0 +1,163 @@
+/**
+ * Controls Styles
+ */
+
+.controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0 12px 12px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  z-index: 20;
+}
+
+.controlsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: var(--vidflowx-control-bar-height, 48px);
+}
+
+.leftControls,
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.controlButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--vidflowx-text, #fff);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.controlButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.controlButton:focus {
+  outline: 2px solid var(--vidflowx-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+.controlButton:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.controlButton.active {
+  color: var(--vidflowx-primary, #3b82f6);
+}
+
+.controlButton svg {
+  width: var(--vidflowx-icon-size, 24px);
+  height: var(--vidflowx-icon-size, 24px);
+}
+
+.speedLabel {
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 36px;
+}
+
+.timeDisplay {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--vidflowx-text, #fff);
+  padding: 0 8px;
+}
+
+.timeSeparator {
+  opacity: 0.6;
+}
+
+/* Dropdown menus */
+.menuContainer {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 8px;
+  background-color: var(--vidflowx-tooltip-background, rgba(0, 0, 0, 0.9));
+  border-radius: 8px;
+  padding: 8px 0;
+  min-width: 100px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 30;
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  color: var(--vidflowx-tooltip-text, #fff);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.menuItem:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menuItem.active {
+  color: var(--vidflowx-primary, #3b82f6);
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .controls {
+    padding: 0 8px 8px;
+  }
+
+  .controlButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .timeDisplay {
+    font-size: 12px;
+    padding: 0 4px;
+  }
+
+  .speedLabel {
+    font-size: 12px;
+    min-width: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .leftControls,
+  .rightControls {
+    gap: 0;
+  }
+
+  .controlButton {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Hide some controls on very small screens */
+  .controlButton:nth-child(n+4) {
+    display: none;
+  }
+}

@@ -1,0 +1,104 @@
+/**
+ * VolumeControl Styles
+ */
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.muteButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--vidflowx-text, #fff);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.muteButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.muteButton:focus {
+  outline: 2px solid var(--vidflowx-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+.muteButton:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.muteButton svg {
+  width: var(--vidflowx-icon-size, 24px);
+  height: var(--vidflowx-icon-size, 24px);
+}
+
+.sliderContainer {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.slider {
+  width: 100%;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.slider:focus {
+  outline: none;
+}
+
+.slider:focus-visible .track {
+  box-shadow: 0 0 0 2px var(--vidflowx-primary, #3b82f6);
+}
+
+.track {
+  width: 100%;
+  height: 4px;
+  background-color: var(--vidflowx-progress-background, rgba(255, 255, 255, 0.3));
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background-color: var(--vidflowx-text, #fff);
+  border-radius: 2px;
+  transition: width 0.05s ease;
+}
+
+.handle {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background-color: var(--vidflowx-text, #fff);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .muteButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .sliderContainer {
+    display: none;
+  }
+}

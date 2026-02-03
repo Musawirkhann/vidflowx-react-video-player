@@ -1,0 +1,191 @@
+/**
+ * VideoPlayer Styles
+ * CSS Module for the main video player component
+ */
+
+/* CSS Variables */
+:root {
+  --vidflowx-primary: #3b82f6;
+  --vidflowx-secondary: #64748b;
+  --vidflowx-controls-background: rgba(0, 0, 0, 0.75);
+  --vidflowx-text: #ffffff;
+  --vidflowx-text-on-primary: #ffffff;
+  --vidflowx-progress-background: rgba(255, 255, 255, 0.3);
+  --vidflowx-progress-filled: #3b82f6;
+  --vidflowx-progress-buffer: rgba(255, 255, 255, 0.5);
+  --vidflowx-tooltip-background: rgba(0, 0, 0, 0.9);
+  --vidflowx-tooltip-text: #ffffff;
+  --vidflowx-border-radius: 8px;
+  --vidflowx-control-bar-height: 48px;
+  --vidflowx-icon-size: 24px;
+  --vidflowx-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Container */
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  background-color: #000;
+  overflow: hidden;
+  font-family: var(--vidflowx-font-family);
+  color: var(--vidflowx-text);
+  border-radius: var(--vidflowx-border-radius);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.container:focus {
+  outline: 2px solid var(--vidflowx-primary);
+  outline-offset: 2px;
+}
+
+.container:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Fullscreen mode */
+.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  z-index: 9999;
+  border-radius: 0;
+}
+
+/* Light theme */
+.light {
+  --vidflowx-controls-background: rgba(255, 255, 255, 0.9);
+  --vidflowx-text: #1f2937;
+  --vidflowx-progress-background: rgba(0, 0, 0, 0.2);
+  --vidflowx-progress-buffer: rgba(0, 0, 0, 0.3);
+  --vidflowx-tooltip-background: rgba(255, 255, 255, 0.95);
+  --vidflowx-tooltip-text: #1f2937;
+}
+
+/* Dark theme (default) */
+.dark {
+  /* Uses default CSS variable values */
+}
+
+/* Big Play Button */
+.bigPlayButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background-color: var(--vidflowx-primary);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+  opacity: 0.9;
+  z-index: 10;
+}
+
+.bigPlayButton:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  opacity: 1;
+}
+
+.bigPlayButton:focus {
+  outline: 2px solid var(--vidflowx-text);
+  outline-offset: 4px;
+}
+
+.bigPlayButton:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.bigPlayButton svg {
+  width: 36px;
+  height: 36px;
+  color: var(--vidflowx-text-on-primary);
+  margin-left: 4px; /* Visual centering for play icon */
+}
+
+/* Responsive breakpoints */
+@media (max-width: 640px) {
+  .bigPlayButton {
+    width: 60px;
+    height: 60px;
+  }
+
+  .bigPlayButton svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  :root {
+    --vidflowx-control-bar-height: 40px;
+    --vidflowx-icon-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bigPlayButton {
+    width: 50px;
+    height: 50px;
+  }
+
+  .bigPlayButton svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
+}
+
+/* Utility classes */
+.hidden {
+  display: none !important;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

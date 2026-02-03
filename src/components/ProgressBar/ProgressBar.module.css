@@ -1,0 +1,146 @@
+/**
+ * ProgressBar Styles
+ */
+
+.container {
+  width: 100%;
+  padding: 8px 0;
+}
+
+.chapterTitle {
+  font-size: 12px;
+  color: var(--vidflowx-text, #fff);
+  margin-bottom: 6px;
+  opacity: 0.8;
+}
+
+.progressBar {
+  position: relative;
+  height: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.progressBar:focus {
+  outline: none;
+}
+
+.progressBar:focus-visible .track {
+  box-shadow: 0 0 0 2px var(--vidflowx-primary, #3b82f6);
+}
+
+.track {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background-color: var(--vidflowx-progress-background, rgba(255, 255, 255, 0.3));
+  border-radius: 2px;
+  overflow: visible;
+  transition: height 0.15s ease;
+}
+
+.progressBar:hover .track,
+.progressBar.dragging .track {
+  height: 6px;
+}
+
+.buffer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--vidflowx-progress-buffer, rgba(255, 255, 255, 0.5));
+  border-radius: 2px;
+  transition: width 0.1s ease;
+}
+
+.played {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--vidflowx-progress-filled, #3b82f6);
+  border-radius: 2px;
+}
+
+.handle {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background-color: var(--vidflowx-progress-filled, #3b82f6);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progressBar:hover .handle,
+.progressBar.dragging .handle {
+  opacity: 1;
+}
+
+.chapterMarker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 12px;
+  background-color: var(--vidflowx-text, #fff);
+  opacity: 0.6;
+  border-radius: 1px;
+  z-index: 1;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  transform: translateX(-50%);
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.thumbnailPreview {
+  border-radius: 4px;
+  margin-bottom: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.tooltipTime {
+  background-color: var(--vidflowx-tooltip-background, rgba(0, 0, 0, 0.9));
+  color: var(--vidflowx-tooltip-text, #fff);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .progressBar {
+    height: 24px;
+  }
+
+  .track {
+    height: 3px;
+  }
+
+  .progressBar:hover .track,
+  .progressBar.dragging .track {
+    height: 5px;
+  }
+
+  .handle {
+    width: 12px;
+    height: 12px;
+  }
+}
