@@ -40,7 +40,8 @@ export default defineConfig({
           'react/jsx-runtime': 'jsxRuntime',
         },
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'style.css') return 'styles.css';
+          // Rename CSS output to styles.css
+          if (assetInfo.name?.endsWith('.css')) return 'styles.css';
           return assetInfo.name || 'asset';
         },
       },
@@ -48,5 +49,6 @@ export default defineConfig({
     sourcemap: true,
     minify: 'esbuild',
     cssCodeSplit: false,
+    copyPublicDir: false, // Don't copy public folder to dist for library build
   },
 });
