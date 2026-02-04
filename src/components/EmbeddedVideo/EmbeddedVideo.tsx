@@ -3,17 +3,32 @@
  * Handles embedded video players (YouTube, Vimeo, Dailymotion, etc.)
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import type { VideoSourceObject } from '../../types';
 import {
   extractYouTubeId,
   extractVimeoId,
   extractDailymotionId,
+  extractTikTokId,
+  extractTikTokUsername,
   getYouTubeEmbedUrl,
   getVimeoEmbedUrl,
   getDailymotionEmbedUrl,
+  getFacebookEmbedUrl,
+  getTikTokEmbedUrl,
 } from '../../utils/sourceDetector';
 import styles from './EmbeddedVideo.module.css';
+
+// Declare TikTok global for TypeScript
+declare global {
+  interface Window {
+    tiktokEmbed?: {
+      lib: {
+        render: (elements: NodeListOf<Element>) => void;
+      };
+    };
+  }
+}
 
 interface EmbeddedVideoProps {
   source: VideoSourceObject;
@@ -34,6 +49,10 @@ export function EmbeddedVideo({
 }: EmbeddedVideoProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(!autoPlay);
+  const [embedError, setEmbedError] = useState(false);
+  const tiktokContainerRef = useRef<HTMLDivElement>(null);
+  const facebookContainerRef = useRef<HTMLDivElement>(null);
+  const loadTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const handleLoadClick = useCallback(() => {
     setShowPlaceholder(false);
@@ -41,9 +60,51 @@ export function EmbeddedVideo({
   }, [onPlay]);
 
   const handleIframeLoad = useCallback(() => {
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+    }
     setIsLoaded(true);
     onReady?.();
   }, [onReady]);
+
+  const handleIframeError = useCallback(() => {
+    setEmbedError(true);
+  }, []);
+
+  // Load TikTok embed script
+  useEffect(() => {
+    if (source.type === 'tiktok' && !showPlaceholder) {
+      const existingScript = document.querySelector('script[src*="tiktok.com/embed.js"]');
+      if (!existingScript) {
+        const script = document.createElement('script');
+        script.src = 'https://www.tiktok.com/embed.js';
+        script.async = true;
+        script.onload = () => {
+          setIsLoaded(true);
+          onReady?.();
+        };
+        script.onerror = () => {
+          // Script failed to load - this is expected in some environments
+          setIsLoaded(true);
+        };
+        document.body.appendChild(script);
+      } else {
+        // Script already exists, try to re-render if tiktokEmbed is available
+        try {
+          if (window.tiktokEmbed?.lib?.render) {
+            const elements = tiktokContainerRef.current?.querySelectorAll('.tiktok-embed');
+            if (elements && elements.length > 0) {
+              window.tiktokEmbed.lib.render(elements);
+            }
+          }
+        } catch {
+          // Ignore errors if tiktokEmbed is not fully initialized
+        }
+        setIsLoaded(true);
+        onReady?.();
+      }
+    }
+  }, [source.type, showPlaceholder, onReady]);
 
   // Generate embed URL based on source type
   const embedData = useMemo(() => {
@@ -78,20 +139,24 @@ export function EmbeddedVideo({
         };
       }
       case 'facebook': {
-        // Facebook requires special handling with their SDK
-        const encodedUrl = encodeURIComponent(url);
         return {
-          embedUrl: `https://www.facebook.com/plugins/video.php?href=${encodedUrl}&show_text=false&autoplay=${autoPlay}`,
+          embedUrl: getFacebookEmbedUrl(url, { autoplay: autoPlay, mute: muted }),
           thumbnailUrl: '',
           title: 'Facebook Video',
+          originalUrl: url,
         };
       }
       case 'tiktok': {
-        // TikTok embed is limited
+        const videoId = extractTikTokId(url);
+        const username = extractTikTokUsername(url);
+        if (!videoId) return null;
         return {
-          embedUrl: url,
+          embedUrl: getTikTokEmbedUrl(videoId),
           thumbnailUrl: '',
           title: 'TikTok Video',
+          videoId,
+          username: username || 'user',
+          originalUrl: url,
         };
       }
       default:
@@ -103,6 +168,30 @@ export function EmbeddedVideo({
     return (
       <div className={styles.error}>
         <p>Unable to load video from this source</p>
+      </div>
+    );
+  }
+
+  // Show fallback for embed errors
+  if (embedError) {
+    return (
+      <div className={styles.fallback}>
+        <div className={styles.fallbackContent}>
+          <div className={styles.platformIcon} data-platform={source.type}>
+            {source.type.charAt(0).toUpperCase()}
+          </div>
+          <p className={styles.fallbackText}>
+            This {source.type.charAt(0).toUpperCase() + source.type.slice(1)} video cannot be embedded here.
+          </p>
+          <a
+            href={source.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.fallbackLink}
+          >
+            Watch on {source.type.charAt(0).toUpperCase() + source.type.slice(1)}
+          </a>
+        </div>
       </div>
     );
   }
@@ -124,9 +213,60 @@ export function EmbeddedVideo({
             <path d="M8 5v14l11-7z" />
           </svg>
         </button>
-        <div className={styles.platformBadge}>
+        <div className={styles.platformBadge} data-platform={source.type}>
           {source.type.charAt(0).toUpperCase() + source.type.slice(1)}
         </div>
+      </div>
+    );
+  }
+
+  // Render Facebook with iframe
+  // Note: Facebook embeds require a public domain (not localhost) and the video must be publicly embeddable
+  if (source.type === 'facebook' && embedData.originalUrl) {
+    return (
+      <div className={styles.container} ref={facebookContainerRef}>
+        {!isLoaded && (
+          <div className={styles.loading}>
+            <div className={styles.spinner} />
+          </div>
+        )}
+        <iframe
+          src={embedData.embedUrl}
+          title={embedData.title}
+          className={`${styles.iframe} ${isLoaded ? styles.visible : ''}`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+          allowFullScreen
+          referrerPolicy="no-referrer-when-downgrade"
+          scrolling="no"
+          frameBorder="0"
+          onLoad={handleIframeLoad}
+          onError={handleIframeError}
+        />
+      </div>
+    );
+  }
+
+  // Render TikTok with iframe for full height display
+  if (source.type === 'tiktok' && embedData.videoId) {
+    return (
+      <div className={styles.tiktokContainer} ref={tiktokContainerRef}>
+        {!isLoaded && (
+          <div className={styles.loading}>
+            <div className={styles.spinner} />
+          </div>
+        )}
+        <iframe
+          src={embedData.embedUrl}
+          title={embedData.title}
+          className={`${styles.tiktokIframe} ${isLoaded ? styles.visible : ''}`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+          allowFullScreen
+          referrerPolicy="no-referrer-when-downgrade"
+          scrolling="no"
+          frameBorder="0"
+          onLoad={handleIframeLoad}
+          onError={handleIframeError}
+        />
       </div>
     );
   }
@@ -142,9 +282,13 @@ export function EmbeddedVideo({
         src={embedData.embedUrl}
         title={embedData.title}
         className={`${styles.iframe} ${isLoaded ? styles.visible : ''}`}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
         allowFullScreen
+        referrerPolicy="no-referrer-when-downgrade"
+        scrolling="no"
+        frameBorder="0"
         onLoad={handleIframeLoad}
+        onError={handleIframeError}
       />
     </div>
   );

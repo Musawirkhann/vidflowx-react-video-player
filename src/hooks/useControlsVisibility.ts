@@ -27,13 +27,35 @@ export function useControlsVisibility({
   const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Use refs to track latest values for use in timer callback (avoids stale closure)
+  // Use refs to track latest values for use in callbacks (avoids stale closures)
   const isPlayingRef = useRef(isPlaying);
   const isHoveringRef = useRef(isHovering);
-  isPlayingRef.current = isPlaying;
-  isHoveringRef.current = isHovering;
+  const onVisibilityChangeRef = useRef(onVisibilityChange);
+  const enabledRef = useRef(enabled);
+  const hideDelayRef = useRef(hideDelay);
+  
+  // Keep refs in sync with props
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+  
+  useEffect(() => {
+    isHoveringRef.current = isHovering;
+  }, [isHovering]);
+  
+  useEffect(() => {
+    onVisibilityChangeRef.current = onVisibilityChange;
+  }, [onVisibilityChange]);
+  
+  useEffect(() => {
+    enabledRef.current = enabled;
+  }, [enabled]);
+  
+  useEffect(() => {
+    hideDelayRef.current = hideDelay;
+  }, [hideDelay]);
 
-  // Clear timeout helper
+  // Clear timeout helper - stable reference
   const clearHideTimeout = useCallback(() => {
     if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current);
@@ -41,78 +63,92 @@ export function useControlsVisibility({
     }
   }, []);
 
-  // Start hide timer
+  // Start hide timer - stable reference using refs
   const startHideTimer = useCallback(() => {
-    if (!enabled || hideDelay === 0) return;
+    if (!enabledRef.current || hideDelayRef.current === 0) return;
 
     clearHideTimeout();
     hideTimeoutRef.current = setTimeout(() => {
       // Use refs to get current values, avoiding stale closure
       if (isPlayingRef.current && !isHoveringRef.current) {
         setIsVisible(false);
-        onVisibilityChange?.(false);
+        onVisibilityChangeRef.current?.(false);
       }
-    }, hideDelay);
-  }, [enabled, hideDelay, clearHideTimeout, onVisibilityChange]);
+    }, hideDelayRef.current);
+  }, [clearHideTimeout]);
 
-  // Show controls
+  // Show controls - stable reference using refs
   const showControls = useCallback(() => {
     setIsVisible(true);
-    onVisibilityChange?.(true);
-    startHideTimer();
-  }, [onVisibilityChange, startHideTimer]);
-
-  // Hide controls
-  const hideControls = useCallback(() => {
-    if (!enabled) return;
-    clearHideTimeout();
-    setIsVisible(false);
-    onVisibilityChange?.(false);
-  }, [enabled, clearHideTimeout, onVisibilityChange]);
-
-  // Handle mouse movement
-  const handleMouseMove = useCallback(() => {
-    showControls();
-  }, [showControls]);
-
-  // Handle mouse enter
-  const handleMouseEnter = useCallback(() => {
-    setIsHovering(true);
-    showControls();
-    clearHideTimeout();
-  }, [showControls, clearHideTimeout]);
-
-  // Handle mouse leave
-  const handleMouseLeave = useCallback(() => {
-    setIsHovering(false);
-    if (isPlaying) {
+    onVisibilityChangeRef.current?.(true);
+    
+    // Only start timer if playing and not hovering
+    if (isPlayingRef.current && !isHoveringRef.current) {
       startHideTimer();
     }
-  }, [isPlaying, startHideTimer]);
+  }, [startHideTimer]);
 
-  // Handle touch start (for mobile)
+  // Hide controls - stable reference using refs
+  const hideControls = useCallback(() => {
+    if (!enabledRef.current) return;
+    clearHideTimeout();
+    setIsVisible(false);
+    onVisibilityChangeRef.current?.(false);
+  }, [clearHideTimeout]);
+
+  // Handle mouse movement - show controls and restart timer
+  const handleMouseMove = useCallback(() => {
+    if (!isHoveringRef.current) {
+      // Only trigger on actual movement within the container (not while actively hovering controls)
+      showControls();
+    }
+  }, [showControls]);
+
+  // Handle mouse enter - show controls and pause timer
+  const handleMouseEnter = useCallback(() => {
+    setIsHovering(true);
+    setIsVisible(true);
+    onVisibilityChangeRef.current?.(true);
+    clearHideTimeout(); // Stop timer while hovering
+  }, [clearHideTimeout]);
+
+  // Handle mouse leave - start timer if playing
+  const handleMouseLeave = useCallback(() => {
+    setIsHovering(false);
+    // Use ref to get current isPlaying value
+    if (isPlayingRef.current) {
+      startHideTimer();
+    }
+  }, [startHideTimer]);
+
+  // Handle touch start (for mobile) - toggle visibility
   const handleTouchStart = useCallback(() => {
     if (isVisible) {
-      hideControls();
+      // Only hide if playing
+      if (isPlayingRef.current) {
+        hideControls();
+      }
     } else {
       showControls();
     }
   }, [isVisible, showControls, hideControls]);
 
-  // Effect to manage timer based on playing state
+  // Effect to manage timer based on playing state changes
   useEffect(() => {
     if (isPlaying && !isHovering) {
+      // Video started playing and not hovering - start hide timer
       startHideTimer();
-    } else {
+    } else if (!isPlaying) {
+      // Video paused/stopped - show controls and clear timer
       clearHideTimeout();
       setIsVisible(true);
-      onVisibilityChange?.(true);
+      onVisibilityChangeRef.current?.(true);
     }
 
     return () => {
       clearHideTimeout();
     };
-  }, [isPlaying, isHovering, startHideTimer, clearHideTimeout, onVisibilityChange]);
+  }, [isPlaying, isHovering, startHideTimer, clearHideTimeout]);
 
   // Effect to handle focus within container
   useEffect(() => {
@@ -120,13 +156,14 @@ export function useControlsVisibility({
     if (!container) return;
 
     const handleFocusIn = () => {
-      showControls();
+      setIsVisible(true);
+      onVisibilityChangeRef.current?.(true);
       clearHideTimeout();
     };
 
     const handleFocusOut = (e: FocusEvent) => {
       if (!container.contains(e.relatedTarget as Node)) {
-        if (isPlaying) {
+        if (isPlayingRef.current) {
           startHideTimer();
         }
       }
@@ -139,7 +176,7 @@ export function useControlsVisibility({
       container.removeEventListener('focusin', handleFocusIn);
       container.removeEventListener('focusout', handleFocusOut);
     };
-  }, [showControls, clearHideTimeout, startHideTimer, isPlaying]);
+  }, [clearHideTimeout, startHideTimer]);
 
   return {
     isVisible,

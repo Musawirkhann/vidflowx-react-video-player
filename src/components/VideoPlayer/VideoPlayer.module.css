@@ -8,17 +8,24 @@
   --vidflowx-primary: #3b82f6;
   --vidflowx-secondary: #64748b;
   --vidflowx-controls-background: rgba(0, 0, 0, 0.75);
+  --vidflowx-controls-gradient-start: transparent;
+  --vidflowx-controls-gradient-end: rgba(0, 0, 0, 0.7);
   --vidflowx-text: #ffffff;
+  --vidflowx-text-secondary: rgba(255, 255, 255, 0.7);
   --vidflowx-text-on-primary: #ffffff;
   --vidflowx-progress-background: rgba(255, 255, 255, 0.3);
   --vidflowx-progress-filled: #3b82f6;
   --vidflowx-progress-buffer: rgba(255, 255, 255, 0.5);
   --vidflowx-tooltip-background: rgba(0, 0, 0, 0.9);
   --vidflowx-tooltip-text: #ffffff;
+  --vidflowx-hover-background: rgba(255, 255, 255, 0.15);
+  --vidflowx-overlay-background: rgba(0, 0, 0, 0.3);
+  --vidflowx-error-background: rgba(0, 0, 0, 0.85);
   --vidflowx-border-radius: 8px;
   --vidflowx-control-bar-height: 48px;
   --vidflowx-icon-size: 24px;
   --vidflowx-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --vidflowx-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Container */
@@ -59,12 +66,19 @@
 
 /* Light theme */
 .light {
-  --vidflowx-controls-background: rgba(255, 255, 255, 0.9);
+  --vidflowx-controls-background: rgba(255, 255, 255, 0.95);
+  --vidflowx-controls-gradient-start: transparent;
+  --vidflowx-controls-gradient-end: rgba(255, 255, 255, 0.95);
   --vidflowx-text: #1f2937;
-  --vidflowx-progress-background: rgba(0, 0, 0, 0.2);
-  --vidflowx-progress-buffer: rgba(0, 0, 0, 0.3);
-  --vidflowx-tooltip-background: rgba(255, 255, 255, 0.95);
+  --vidflowx-text-secondary: rgba(31, 41, 55, 0.7);
+  --vidflowx-progress-background: rgba(0, 0, 0, 0.12);
+  --vidflowx-progress-buffer: rgba(0, 0, 0, 0.2);
+  --vidflowx-tooltip-background: #ffffff;
   --vidflowx-tooltip-text: #1f2937;
+  --vidflowx-hover-background: rgba(0, 0, 0, 0.06);
+  --vidflowx-overlay-background: rgba(255, 255, 255, 0.5);
+  --vidflowx-error-background: rgba(255, 255, 255, 0.95);
+  --vidflowx-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 /* Dark theme (default) */
@@ -171,6 +185,11 @@
     transform: translate(-50%, -50%) scale(1);
     opacity: 0.9;
   }
+}
+
+/* Hide cursor when controls are hidden during playback */
+.hideCursor {
+  cursor: none;
 }
 
 /* Utility classes */

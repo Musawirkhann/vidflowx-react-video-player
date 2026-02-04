@@ -120,15 +120,35 @@ export function ProgressBar({
     }
   }, [isDragging]);
 
-  // Get current chapter
+  // Get current chapter based on currentTime
+  // Find the chapter with the latest startTime that is <= currentTime
   const currentChapter = useMemo(() => {
-    if (!chapters.length) return null;
-    return chapters.find(
-      (chapter) =>
-        state.currentTime >= chapter.startTime &&
-        (!chapter.endTime || state.currentTime < chapter.endTime)
-    );
-  }, [chapters, state.currentTime]);
+    if (!chapters.length || state.duration === 0) return null;
+    
+    // Sort chapters by startTime to ensure correct order
+    const sortedChapters = [...chapters].sort((a, b) => a.startTime - b.startTime);
+    
+    // Find the chapter that contains the current time
+    for (let i = sortedChapters.length - 1; i >= 0; i--) {
+      const chapter = sortedChapters[i];
+      const nextChapter = sortedChapters[i + 1];
+      
+      // Calculate effective endTime: use explicit endTime, or next chapter's startTime, or duration
+      const effectiveEndTime = chapter.endTime ?? nextChapter?.startTime ?? state.duration;
+      
+      if (state.currentTime >= chapter.startTime && state.currentTime < effectiveEndTime) {
+        return chapter;
+      }
+    }
+    
+    // If currentTime is at or past the last chapter's start, return the last chapter
+    const lastChapter = sortedChapters[sortedChapters.length - 1];
+    if (state.currentTime >= lastChapter.startTime) {
+      return lastChapter;
+    }
+    
+    return null;
+  }, [chapters, state.currentTime, state.duration]);
 
   // Calculate thumbnail position for hover preview
   const thumbnailIndex = useMemo(() => {
@@ -151,9 +171,14 @@ export function ProgressBar({
 
   return (
     <div className={styles.container}>
-      {/* Chapter title */}
+      {/* Chapter info */}
       {currentChapter && (
-        <div className={styles.chapterTitle}>{currentChapter.title}</div>
+        <div className={styles.chapterInfo}>
+          <span className={styles.chapterTitle}>{currentChapter.title}</span>
+          {currentChapter.description && (
+            <span className={styles.chapterDescription}>{currentChapter.description}</span>
+          )}
+        </div>
       )}
 
       {/* Progress bar */}
@@ -201,14 +226,14 @@ export function ProgressBar({
               title={chapter.title}
             />
           ))}
-        </div>
 
-        {/* Scrubber handle */}
-        <motion.div
-          className={styles.handle}
-          style={{ left: `${state.playedPercent}%` }}
-          animate={{ scale: isDragging ? 1.2 : 1 }}
-        />
+          {/* Scrubber handle */}
+          <motion.div
+            className={styles.handle}
+            style={{ left: `${state.playedPercent}%` }}
+            animate={{ scale: isDragging ? 1.2 : 1 }}
+          />
+        </div>
 
         {/* Hover preview tooltip */}
         {hoverPosition !== null && (

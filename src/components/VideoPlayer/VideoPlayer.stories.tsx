@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { VideoPlayer } from './VideoPlayer';
 
@@ -45,6 +46,12 @@ const SAMPLE_POSTER = 'https://commondatastorage.googleapis.com/gtv-videos-bucke
 const YOUTUBE_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 const VIMEO_URL = 'https://vimeo.com/76979871';
 const HLS_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+const DAILYMOTION_URL = 'https://www.dailymotion.com/video/x8m8jm4';
+// Facebook video URL - must be a public video from a page that allows embedding
+// Note: Facebook embedding is very restrictive and may not work on localhost
+const FACEBOOK_URL = 'https://www.facebook.com/facebook/videos/10153231379946729/';
+// TikTok video URL - must be a public video
+const TIKTOK_URL = 'https://www.tiktok.com/@scout2015/video/6718335390845095173';
 
 export const Default: Story = {
   args: {
@@ -127,13 +134,13 @@ export const WithCaptions: Story = {
     controls: true,
     captions: [
       {
-        src: 'https://example.com/subtitles/en.vtt',
+        src: '/subtitles/en.vtt',
         lang: 'en',
         label: 'English',
         default: true,
       },
       {
-        src: 'https://example.com/subtitles/es.vtt',
+        src: '/subtitles/es.vtt',
         lang: 'es',
         label: 'Spanish',
       },
@@ -237,6 +244,49 @@ export const SmallPlayer: Story = {
   decorators: [
     (Story) => (
       <div>
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const Dailymotion: Story = {
+  args: {
+    src: DAILYMOTION_URL,
+    controls: true,
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: '800px', maxWidth: '100%' }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const Facebook: Story = {
+  args: {
+    src: FACEBOOK_URL,
+    controls: true,
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: '800px', maxWidth: '100%' }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const TikTok: Story = {
+  args: {
+    src: TIKTOK_URL,
+    controls: true,
+    aspectRatio: '9:16', // TikTok videos are vertical
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: '350px', maxWidth: '100%', height: '620px' }}>
         <Story />
       </div>
     ),

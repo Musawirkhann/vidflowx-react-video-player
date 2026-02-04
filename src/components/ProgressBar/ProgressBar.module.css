@@ -7,11 +7,30 @@
   padding: 8px 0;
 }
 
+.chapterInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  min-height: 18px;
+}
+
 .chapterTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--vidflowx-text, #fff);
+}
+
+.chapterDescription {
   font-size: 12px;
   color: var(--vidflowx-text, #fff);
-  margin-bottom: 6px;
-  opacity: 0.8;
+  opacity: 0.7;
+}
+
+.chapterDescription::before {
+  content: '•';
+  margin-right: 8px;
+  opacity: 0.5;
 }
 
 .progressBar {
@@ -66,16 +85,18 @@
 
 .handle {
   position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  bottom: 0;
   width: 14px;
   height: 14px;
+  margin: auto 0 auto -14px;
   background-color: var(--vidflowx-progress-filled, #3b82f6);
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.15s ease;
   pointer-events: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 3;
 }
 
 .progressBar:hover .handle,
@@ -87,12 +108,18 @@
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 3px;
-  height: 12px;
+  width: 4px;
+  height: 4px;
   background-color: var(--vidflowx-text, #fff);
-  opacity: 0.6;
-  border-radius: 1px;
-  z-index: 1;
+  opacity: 0.8;
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.progressBar:hover .chapterMarker {
+  width: 6px;
+  height: 6px;
 }
 
 .tooltip {
@@ -124,6 +151,11 @@
   white-space: nowrap;
 }
 
+/* Light theme tooltip with border */
+:global([data-theme="light"]) .tooltipTime {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .progressBar {
@@ -142,5 +174,6 @@
   .handle {
     width: 12px;
     height: 12px;
+    margin: auto 0 auto -12px;
   }
 }

@@ -261,3 +261,49 @@ export function getDailymotionEmbedUrl(videoId: string, options?: {
 
   return `https://www.dailymotion.com/embed/video/${videoId}?${params.toString()}`;
 }
+
+/**
+ * Generate Facebook embed URL
+ * Facebook uses their plugins/video.php endpoint for embedding
+ * Note: Facebook embeds require the video to be public and may not work on localhost
+ */
+export function getFacebookEmbedUrl(videoUrl: string, options?: {
+  autoplay?: boolean;
+  mute?: boolean;
+  showText?: boolean;
+  width?: number;
+}): string {
+  // Facebook embed URL format
+  const encodedUrl = encodeURIComponent(videoUrl);
+  const showText = options?.showText ? 'true' : 'false';
+  const autoplay = options?.autoplay ? 'true' : 'false';
+  const muted = options?.mute ? 'true' : 'false';
+  const width = options?.width || 560; // Facebook requires numeric width
+  
+  return `https://www.facebook.com/plugins/video.php?href=${encodedUrl}&show_text=${showText}&autoplay=${autoplay}&muted=${muted}&width=${width}`;
+}
+
+/**
+ * Generate TikTok embed URL
+ * TikTok uses their embed player with a specific format
+ */
+export function getTikTokEmbedUrl(videoId: string): string {
+  // TikTok embed v2 format
+  return `https://www.tiktok.com/embed/v2/${videoId}`;
+}
+
+/**
+ * Generate TikTok oEmbed HTML (for script-based embedding)
+ * This is an alternative approach that requires loading TikTok's embed script
+ */
+export function getTikTokOEmbedUrl(videoUrl: string): string {
+  return `https://www.tiktok.com/oembed?url=${encodeURIComponent(videoUrl)}`;
+}
+
+/**
+ * Extract username from TikTok URL
+ */
+export function extractTikTokUsername(url: string): string | null {
+  const match = url.match(/tiktok\.com\/@([^\/]+)/i);
+  return match ? match[1] : null;
+}

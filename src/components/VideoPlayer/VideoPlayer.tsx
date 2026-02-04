@@ -11,6 +11,7 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import type {
   VideoPlayerProps,
   VideoPlayerRef,
@@ -115,6 +116,11 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       playlist,
     });
 
+    // Memoized visibility change handler
+    const handleControlsVisibilityChange = useCallback((visible: boolean) => {
+      stateManager.setControlsVisible(visible);
+    }, [stateManager]);
+
     // Controls visibility
     const {
       isVisible: controlsVisible,
@@ -123,7 +129,7 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       hideDelay: controlsAutoHide,
       enabled: controlsAutoHide > 0,
       isPlaying: state.isPlaying,
-      onVisibilityChange: (visible) => stateManager.setControlsVisible(visible),
+      onVisibilityChange: handleControlsVisibilityChange,
     });
 
     // Keyboard shortcuts
@@ -260,8 +266,23 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         stateManager.updateStateMultiple({
           isLoading: false,
         });
+
+        // Enable default caption track if one exists
+        if (captions.length > 0) {
+          const defaultCaptionIndex = captions.findIndex((c) => c.default);
+          if (defaultCaptionIndex >= 0 && video.textTracks.length > 0) {
+            // Wait for text tracks to be loaded
+            setTimeout(() => {
+              const tracks = video.textTracks;
+              for (let i = 0; i < tracks.length; i++) {
+                tracks[i].mode = i === defaultCaptionIndex ? 'showing' : 'hidden';
+              }
+              stateManager.setActiveCaption(defaultCaptionIndex);
+            }, 100);
+          }
+        }
       }
-    }, [stateManager]);
+    }, [stateManager, captions]);
 
     const handleLoadedData = useCallback(() => {
       // Video first frame is available, ready to play
@@ -445,12 +466,15 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           ref={containerRef}
           className={`${styles.container} ${className || ''} ${
             state.isFullscreen ? styles.fullscreen : ''
-          } ${theme?.mode === 'light' ? styles.light : styles.dark}`}
+          } ${theme?.mode === 'light' ? styles.light : styles.dark} ${
+            state.isPlaying && !controlsVisible ? styles.hideCursor : ''
+          }`}
           style={containerStyles}
           tabIndex={tabIndex}
           role="application"
           aria-label={ariaLabel || 'Video Player'}
           aria-describedby={ariaDescribedBy}
+          data-theme={theme?.mode === 'light' ? 'light' : 'dark'}
           {...controlsHandlers}
         >
           {/* Video Element */}
@@ -510,18 +534,21 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           )}
 
           {/* Controls - only show for native video sources */}
-          {showControls && controlsVisible && !state.error && isNative && (
-            <Controls
-              config={controlsConfig}
-              playbackSpeeds={playbackSpeeds}
-              chapters={chapters}
-              captions={captions}
-              hoverPreview={hoverPreview}
-              hoverPreviewSrc={hoverPreviewSrc}
-              hoverPreviewCount={hoverPreviewCount}
-              components={components}
-            />
-          )}
+          <AnimatePresence>
+            {showControls && controlsVisible && !state.error && isNative && (
+              <Controls
+                config={controlsConfig}
+                playbackSpeeds={playbackSpeeds}
+                chapters={chapters}
+                captions={captions}
+                hoverPreview={hoverPreview}
+                hoverPreviewSrc={hoverPreviewSrc}
+                hoverPreviewCount={hoverPreviewCount}
+                components={components}
+                themeMode={theme?.mode === 'light' ? 'light' : 'dark'}
+              />
+            )}
+          </AnimatePresence>
 
           {/* Big Play Button (shown when paused or idle, only for native video) */}
           {isNative && !state.isPlaying && !state.isBuffering && !state.error && (

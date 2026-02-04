@@ -8,6 +8,29 @@
   height: 100%;
 }
 
+/* TikTok-specific container for vertical videos */
+.tiktokContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+  overflow: hidden;
+}
+
+/* TikTok embed iframe styling - scale to fill container */
+.tiktokContainer .tiktokIframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  transform-origin: center center;
+}
+
 .iframe {
   position: absolute;
   top: 0;
@@ -82,6 +105,28 @@
   z-index: 2;
 }
 
+/* Platform-specific badge colors */
+.platformBadge[data-platform="youtube"] {
+  background-color: #ff0000;
+}
+
+.platformBadge[data-platform="vimeo"] {
+  background-color: #1ab7ea;
+}
+
+.platformBadge[data-platform="dailymotion"] {
+  background-color: #00d2f3;
+  color: #000;
+}
+
+.platformBadge[data-platform="facebook"] {
+  background-color: #1877f2;
+}
+
+.platformBadge[data-platform="tiktok"] {
+  background: linear-gradient(135deg, #00f2ea, #ff0050);
+}
+
 .loading {
   position: absolute;
   top: 0;
@@ -119,4 +164,80 @@
   color: #9ca3af;
   text-align: center;
   padding: 20px;
+}
+
+/* Fallback display for embed failures */
+.fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+
+.fallbackContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.platformIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  background-color: #6b7280;
+}
+
+.platformIcon[data-platform="youtube"] {
+  background-color: #ff0000;
+}
+
+.platformIcon[data-platform="vimeo"] {
+  background-color: #1ab7ea;
+}
+
+.platformIcon[data-platform="dailymotion"] {
+  background-color: #00d2f3;
+}
+
+.platformIcon[data-platform="facebook"] {
+  background-color: #1877f2;
+}
+
+.platformIcon[data-platform="tiktok"] {
+  background: linear-gradient(135deg, #00f2ea, #ff0050);
+}
+
+.fallbackText {
+  margin: 0;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.fallbackLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: var(--vidflowx-primary, #3b82f6);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.fallbackLink:hover {
+  background-color: #2563eb;
 }

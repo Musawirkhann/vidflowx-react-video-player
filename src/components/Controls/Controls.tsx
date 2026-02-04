@@ -21,17 +21,19 @@ interface ControlsProps {
   hoverPreviewSrc?: string;
   hoverPreviewCount?: number;
   components?: ComponentOverrides;
+  themeMode?: 'light' | 'dark';
 }
 
 export function Controls({
   config,
-  playbackSpeeds,
+  playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2],
   chapters = [],
   captions = [],
   hoverPreview,
   hoverPreviewSrc,
   hoverPreviewCount,
   components,
+  themeMode = 'dark',
 }: ControlsProps) {
   const { state, actions } = useVideoPlayerContext();
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
@@ -80,7 +82,7 @@ export function Controls({
 
   return (
     <motion.div
-      className={styles.controls}
+      className={`${styles.controls} ${themeMode === 'light' ? styles.light : ''}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
@@ -196,7 +198,7 @@ export function Controls({
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.15 }}
                   >
-                    {playbackSpeeds.map((speed) => (
+                    {Array.isArray(playbackSpeeds) && playbackSpeeds.map((speed) => (
                       <button
                         key={speed}
                         className={`${styles.menuItem} ${
