@@ -3,9 +3,13 @@
 A fully customizable React video player that supports all modern video player features. Play videos from direct sources (MP4, WebM, OGG), streaming formats (HLS, DASH), and social platforms (YouTube, Vimeo, Dailymotion, Facebook, TikTok).
 
 [![npm version](https://img.shields.io/npm/v/vidflowx.svg)](https://www.npmjs.com/package/vidflowx)
+[![npm downloads](https://img.shields.io/npm/dm/vidflowx.svg)](https://www.npmjs.com/package/vidflowx)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/vidflowx)](https://bundlephobia.com/package/vidflowx)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://reactjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**[View on NPM](https://www.npmjs.com/package/vidflowx)** | **[Live Demo](https://github.com/musawirkhann/vidflowx-react-video-player)** | **[Documentation](#api-reference)**
 
 ## Features
 
