@@ -28,6 +28,7 @@ import { VideoPlayerProvider } from '../../providers/VideoPlayerContext';
 import { parseSource, isNativeSource } from '../../utils/sourceDetector';
 import { NativeVideo } from '../NativeVideo/NativeVideo';
 import { EmbeddedVideo } from '../EmbeddedVideo/EmbeddedVideo';
+import { BigPlayIcon } from '../Icons';
 import { Controls } from '../Controls/Controls';
 import { LoadingIndicator } from '../LoadingIndicator/LoadingIndicator';
 import { ErrorDisplay } from '../ErrorDisplay/ErrorDisplay';
@@ -560,9 +561,7 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
                 onClick={() => actions.play()}
                 aria-label="Play video"
               >
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
+                <BigPlayIcon />
               </button>
             )
           )}

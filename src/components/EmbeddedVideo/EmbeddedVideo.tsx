@@ -209,9 +209,10 @@ export function EmbeddedVideo({
           />
         )}
         <button className={styles.playButton} aria-label="Load and play video">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M8 5v14l11-7z" />
-          </svg>
+          <span
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+            dangerouslySetInnerHTML={{ __html: '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>' }}
+          />
         </button>
         <div className={styles.platformBadge} data-platform={source.type}>
           {source.type.charAt(0).toUpperCase() + source.type.slice(1)}

@@ -1,6 +1,6 @@
 {
   "name": "vidflowx",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "A fully customizable React video player supporting direct sources, YouTube, Vimeo, Dailymotion, Facebook, TikTok, HLS, and DASH streaming",
   "author": "Musawir Khan",
   "license": "MIT",

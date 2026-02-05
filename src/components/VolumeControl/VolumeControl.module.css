@@ -38,6 +38,8 @@
 .muteButton svg {
   width: var(--vidflowx-icon-size, 24px);
   height: var(--vidflowx-icon-size, 24px);
+  fill: currentColor;
+  color: inherit;
 }
 
 .sliderContainer {
